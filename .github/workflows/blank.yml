@@ -6,9 +6,6 @@ name: CI
 # events but only for the master branch
 on: push
 
-env:
-  BRANCH_NAME: ${{ ${GITHUB_REF#refs/heads/} }}
-
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -21,6 +18,13 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
+    - name: Get the current branch name
+      id: myref
+      shell: bash
+      run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
+
     # Runs a single command using the runners shell
     - name: Run a one-line script
-      run: echo $BRANCH_NAME
+      env:
+        BRANCH: ${{ steps.myref.outputs.branch }}
+      run: echo $BRANCH

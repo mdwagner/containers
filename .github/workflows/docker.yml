@@ -1,0 +1,23 @@
+name: Docker CI
+
+on: [push, pull_request]
+
+jobs:
+  fusionauth-push:
+    name: Push Docker image
+    runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/latest'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Push to GHCR
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.CR_USERNAME }}
+        password: ${{ secrets.CR_PAT }}
+        registry: ghcr.io
+        repository: ${{ github.repository }}
+        tag_with_sha: true
+        path: ruby-api
